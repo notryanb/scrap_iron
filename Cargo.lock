@@ -1,0 +1,4 @@
+[root]
+name = "rust-server"
+version = "0.1.0"
+
