@@ -1,6 +1,9 @@
 use std::io::{Read, Write, BufReader, BufRead};
 use std::net::{TcpListener, TcpStream};
 use std::thread;
+use std::path::Path;
+use std::env;
+use std::fs::File;
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:2345").unwrap();
@@ -9,6 +12,9 @@ fn main() {
 }
 
 fn handle_request(stream: TcpStream) {
+    let path = Path::new("/public/");
+    println!("Path: {:?} ", path);
+    println!("Current dir {:?}", std::env::current_dir().unwrap());
 
     let mut reader = BufReader::new(stream);
 
@@ -22,8 +28,11 @@ fn handle_request(stream: TcpStream) {
 }
 
 fn send_response(mut stream: TcpStream) {
-    // Write the header and the html body
-    let response = "HTTP/1.1 200 OK\n\n<html><body><h1>Hello, World!</h1></body></html>";
-    stream.write_all(response.as_bytes()).unwrap();
+    let mut f = File::open("public/index.html").unwrap();
+    let mut response = String::new();
+
+    f.read_to_string(&mut response);
+
+    stream.write(response.as_bytes()).unwrap();
 }
 
